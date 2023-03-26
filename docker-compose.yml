@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    image: file-web
+    command:
+      - ./target/release/file-web
+    ports:
+      - "3000:3000"
+    tty: true
+    working_dir: /app
+  db:
+    image: postgres:15
+    restart: always
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    environment:
+      POSTGRES_PASSWORD: ciona-db
+      POSTGRES_USER: user
+      POSTGRES_DB: db
+    volumes:
+        - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
