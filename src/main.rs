@@ -1,7 +1,7 @@
 use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse};
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use hyper::{Body, Request, Response};
 use lazy_static::lazy_static;
 use mime_guess::from_path;
@@ -11,6 +11,8 @@ use std::path::PathBuf;
 use tera::{Context, Tera};
 use tokio::{fs::File, io::AsyncReadExt};
 use tokio_util::io::ReaderStream;
+
+mod static_serve;
 
 lazy_static! {
     pub static ref TEMPLATES: Tera = {
@@ -45,36 +47,13 @@ async fn main() {
         .route("/", get(|| async { "Hello, World!" }))
         .route("/echo/:int", get(echo_int))
         .route("/images/", get(get_image))
-        .route("/static/:file", get(serve_static_file));
+        .route("/static/:file", get(static_serve::serve_static_file));
 
     // Run it on localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
-}
-async fn serve_static_file(req: Request<Body>) -> Result<impl IntoResponse, Infallible> {
-    let path =
-        std::path::Path::new("static").join(req.uri().path().strip_prefix("/static/").unwrap());
-    let file = match tokio::fs::File::open(&path).await {
-        Ok(file) => file,
-        Err(_) => {
-            println!("File not found, {}", path.canonicalize().expect("Unable to canoncialise path").display());
-            return Ok(Response::builder()
-                .status(StatusCode::NOT_FOUND)
-                .body(Body::empty())
-                .unwrap());
-        }
-    };
-
-    let stream = ReaderStream::new(file);
-    let body = Body::wrap_stream(stream);
-    let mime = mime_guess::from_path(&path).first_or_octet_stream();
-    Ok(Response::builder()
-        .status(StatusCode::OK)
-        .header("content-type", mime.as_ref())
-        .body(body)
-        .unwrap())
 }
 
 async fn echo_int(Path(val): Path<i32>) -> String {
