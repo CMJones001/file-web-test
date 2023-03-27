@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A simple template for the Image Tables</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
+    </style>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<!-- Add a table header and the loop through the images as table rows. -->
+<div class="container">
+    <h1>Template Table Example</h1>
+    <table id="myTable">
+        <tr>
+            <th></th>
+            <th>Image ID</th>
+            <th>Image Path</th>
+        </tr>
+        {% for image in images %}
+            <tr class="row-to-hide">
+                <td>{{loop.index}}</td>
+                <td>{{image.id}}</td>
+                <td>{{image.location}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <button id="expandButton">Show more rows</button>
+</div>
+
+</body>
+</html>
