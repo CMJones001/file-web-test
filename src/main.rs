@@ -38,16 +38,22 @@ impl Image {
 async fn main() {
     // Build a single route
     let app = Router::new()
-        .route("/", get(|| async { "Hello, World!" }))
+        .route("/", get(landing_page))
         .route("/echo/:int", get(echo_int))
         .route("/images/:int", get(get_image))
-        .route("/static/:file", get(static_serve::serve_static_file));
+        .route("/static/*file", get(static_serve::serve_static_file));
 
     // Run it on localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+async fn landing_page() -> Html<String> {
+    let mut context = Context::new();
+    let rendered = TEMPLATES.render("index.html", &context).unwrap();
+    Html(rendered)
 }
 
 async fn echo_int(Path(val): Path<i32>) -> String {
