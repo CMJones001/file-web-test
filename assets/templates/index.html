@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="/static/semantic/semantic.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script src="/static/semantic/semantic.min.js"></script>
     <title>Hello!</title>
 </head>
@@ -25,12 +26,16 @@
 </div>
 
 <p>This is a progress bar</p>
-<div class="ui teal progress">
+<div class="ui teal progress" id="base-progress" data-percent="10">
     <div class="bar">
         <div class="progress"></div>
     </div>
     <div class="label">Uploading Files</div>
 </div>
+<button class="ui primary button" id="progress-button">
+    Add more progress!
+</button>
+<script src="/static/landing-page.js"></script>
 
 </body>
 </html>
